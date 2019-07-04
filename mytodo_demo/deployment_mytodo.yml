@@ -1,3 +1,51 @@
+---
+# Application to deploy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mytodos
+spec:
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  selector:
+    matchLabels:
+      app: mytodos
+  template:   # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: mytodos
+        tier: frontend
+    spec:
+      containers:
+      - name: mytodos
+        image: de.icr.io/cr_uc4/todo-ipsen:1.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 250m     # 250 millicores = 1/4 core
+            memory: 128Mi # 128 MB
+          limits:
+            cpu: 500m 
+            memory: 384Mi
+        envFrom:
+        - secretRef:
+            name: database-credentials
+---
+# Service to expose a service in front of the pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: mytodos
+  labels:
+    app: mytodos
+    tier: frontend
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+  selector:
+    app: mytodos
+    tier: frontend
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -10,10 +58,11 @@ metadata:
 spec:
   tls:
   - hosts:
-    - smukfest.eu-de.containers.appdomain.cloud
+  #Notice the subdomain 'uc4', the ingress services for the teams cant share host names, therefore a sub domain for each team (uc1-uc7)
+    - uc4.smukfest.eu-de.containers.appdomain.cloud
     secretName: smukfest
   rules:
-  - host: smukfest.eu-de.containers.appdomain.cloud
+  - host: uc4.smukfest.eu-de.containers.appdomain.cloud
     http:
       paths:
       - path: /todo/

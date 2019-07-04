@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: mytodos
-        image: de.icr.io/cr_uc1/todo-ipsen:1.0
+        image: de.icr.io/cr_uc4/todo-ipsen:1.0
         imagePullPolicy: Always
         resources:
           requests:

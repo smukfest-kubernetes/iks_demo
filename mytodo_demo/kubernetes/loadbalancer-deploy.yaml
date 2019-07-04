@@ -1,0 +1,50 @@
+---
+# Application to deploy
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mytodos
+spec:
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: mytodos
+        tier: frontend
+    spec:
+      containers:
+      - name: mytodos
+        image: <region>.icr.io/<namespace>/mytodos:1.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 250m     # 250 millicores = 1/4 core
+            memory: 128Mi # 128 MB
+          limits:
+            cpu: 500m
+            memory: 384Mi
+        volumeMounts:
+          - mountPath: /opt/service-bind # Mount the "service-bind-volume" volume into the pod.
+            name: service-bind-volume
+      volumes:
+        - name: service-bind-volume
+          secret:
+            defaultMode: 420
+            secretName: binding-todo-cloudant
+---
+# Service to expose frontend
+apiVersion: v1
+kind: Service
+metadata:
+  name: mytodos
+  labels:
+    app: mytodos
+    tier: frontend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080 # Internal Port
+    # nodePort: 31513
+  selector:
+    app: mytodos
+    tier: frontend

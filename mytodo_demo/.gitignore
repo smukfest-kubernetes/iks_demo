@@ -1,0 +1,20 @@
+# Node.js
+node_modules
+
+# Terraform
+terraform/provider.tf
+terraform/.terraform
+terraform/terraform.tfstate*
+
+# Cloud Foundry
+vcap-local.json
+
+# Local Values
+ibmcloud/certificate
+chart/mytodos/local-values.yaml
+credentials.env
+kubernetes/ingress-tls-mydeploy.yaml
+
+# Miscellaneous
+myreadme.txt
+.editorconfig

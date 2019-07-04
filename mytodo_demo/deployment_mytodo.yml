@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: smukfest-ingress  
+  annotations:
+    #Read more about rewrite path here: https://cloud.ibm.com/docs/containers?topic=containers-ingress_annotation#rewrite-path
+    ingress.bluemix.net/rewrite-path: "serviceName=mytodos rewrite=/"
+    # Force the use of https if the request is http
+    ingress.bluemix.net/redirect-to-https: "True"
+spec:
+  tls:
+  - hosts:
+    - smukfest.eu-de.containers.appdomain.cloud
+    secretName: smukfest
+  rules:
+  - host: smukfest.eu-de.containers.appdomain.cloud
+    http:
+      paths:
+      - path: /todo/
+        backend:
+          serviceName: mytodos
+          servicePort: 8080 
+      - path:  /resource-serving/ 
+        backend:
+          serviceName: resource-serving-service 
+          servicePort: 80
